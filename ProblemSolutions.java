@@ -1,7 +1,6 @@
-
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   LISSETE RAMIREZ / SECTION 002
  *
  *   This java file contains the problem solutions for the methods lastBoulder,
  *   showDuplicates, and pair methods. You should utilize the Java Collection
@@ -63,13 +62,25 @@ public class ProblemSolutions {
      * returning the 0 if queue is empty else return pq.peek().
      */
 
-  public static int lastBoulder(int[] boulders) {
-
-      //
-      // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME / SECTION # ABOVE
-      //
-      return -1;
-  }
+    public static int lastBoulder(int[] boulders) {
+        //a max-heap is set up to keep track of the boulders weight, largest first
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        //each boulder is added to the max-heap
+        for (int boulder : boulders) {
+            maxHeap.offer(boulder);
+        }
+        //the two heaviest boulders will be smashed together until only one or none remain
+        while (maxHeap.size() > 1) {
+            int x = maxHeap.poll(); //removes the heaviest boulder
+            int y = maxHeap.poll(); //removes the second-heaviest boulder
+            //if they're different weights, the result is added back to the heap
+            if (x != y) {
+                maxHeap.offer(Math.abs(x - y));
+            }
+        }
+        //the weight of the last remaining boulder is returned, but 0 will be returned if none are left
+        return maxHeap.isEmpty() ? 0 : maxHeap.peek();
+    }
 
 
     /**
@@ -90,12 +101,22 @@ public class ProblemSolutions {
      */
 
     public static ArrayList<String> showDuplicates(ArrayList<String> input) {
-
-        //
-        //  YOUR CODE GOES HERE
-        //
-        return new ArrayList<>();  // Make sure result is sorted in ascending order
-
+        //map is created to count how many times each string appears
+        HashMap<String, Integer> frequencyMap = new HashMap<>();
+        for (String str : input) {
+            frequencyMap.put(str, frequencyMap.getOrDefault(str, 0) + 1);
+        }
+        //list is created to store the string that appear more than once
+        ArrayList<String> duplicates = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : frequencyMap.entrySet()) {
+            //if a string appears more than once then it is added to the duplicate list
+            if (entry.getValue() > 1) {
+                duplicates.add(entry.getKey());
+            }
+        }
+        //list of duplicated is sorted alphabetically
+        Collections.sort(duplicates);
+        return duplicates;
     }
 
 
@@ -130,10 +151,25 @@ public class ProblemSolutions {
      */
 
     public static ArrayList<String> pair(int[] input, int k) {
-
-        //
-        //  YOUR CODE GOES HERE
-        //
-        return new ArrayList<>();  // Make sure returned lists is sorted as indicated above
+        //keeps track of numbers we have already seen
+        Set<Integer> seen = new HashSet<>();
+        //stores each pair as a string and its automatically sorted
+        TreeSet<String> uniquePairs = new TreeSet<>();
+        //goes through each number in the array
+        for (int num : input) {
+            //calculates the numbers we need to make the pair add up to k
+            int target = k - num;
+            //if target number is seen, we have a pair
+            if (seen.contains(target)) {
+                int first = Math.min(num, target); //makes sure smaller number is first in the pair
+                int second = Math.max(num, target);//makes sure the larger number is the second
+                //pair is added as a formatted string
+                uniquePairs.add(String.format("(%d, %d)", first, second));
+            }
+            //adds current number to the set of numbers we have already seen
+            seen.add(num);
+        }
+        //the set of pairs is converted to a list and its returned
+        return new ArrayList<>(uniquePairs);
     }
 }
